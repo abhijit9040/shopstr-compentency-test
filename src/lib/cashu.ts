@@ -60,23 +60,27 @@ export const spendP2PKToken = {
   // Spend a P2PK-locked token
   spendToken: async (mintUrl: string, tokenStr: string, privateKey: string, publicKey: string) => {
     try {
-      // Parse the token
-      JSON.parse(tokenStr);
+      // Parse and validate the token
+      const token = JSON.parse(tokenStr);
+      if (!token.token || !token.token[0] || !token.token[0].proofs) {
+        throw new Error('Invalid token structure');
+      }
       
-      // In a real implementation, you would:
-      // 1. Create a signature using the private key
-      // 2. Submit the token, public key, and signature to the mint
+      // Find the proof locked with our public key
+      const proof = token.token[0].proofs.find((p: { pubkey: string }) => p.pubkey === publicKey);
+      if (!proof) {
+        throw new Error('Token is not locked with the provided public key');
+      }
       
-      // Simulate signature creation
-      const messageToSign = "spend_token";
-      const messageHash = crypto.createHash('sha256').update(messageToSign).digest();
+      // Sign the proof ID to prove ownership
+      const messageToSign = Buffer.from(proof.id);
       const privKeyBuffer = Buffer.from(privateKey, 'hex');
-      const signature = secp256k1.ecdsaSign(messageHash, privKeyBuffer);
+      const signature = secp256k1.ecdsaSign(messageToSign, privKeyBuffer);
       
       // Verify the signature (this would normally be done by the mint)
       const isValid = secp256k1.ecdsaVerify(
         signature.signature,
-        messageHash,
+        messageToSign,
         Buffer.from(publicKey, 'hex')
       );
       
@@ -86,9 +90,9 @@ export const spendP2PKToken = {
       
       // Simulate successful spending
       return "Token successfully spent! The signature was verified against the public key.";
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error spending P2PK token:', error);
-      throw new Error('Failed to spend P2PK token');
+      throw new Error(`Failed to spend P2PK token: ${error.message}`);
     }
   }
 };

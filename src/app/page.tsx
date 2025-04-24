@@ -57,12 +57,23 @@ export default function Home() {
               This demo shows how to create and spend a P2PK-locked Cashu token,
               which can be used for escrow in Shopstr.
             </p>
-            <button 
-              onClick={() => window.location.href = '/cashu-demo'} 
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              Start Cashu Demo
-            </button>
+            <div className="space-y-2">
+              <button 
+                onClick={() => window.location.href = '/cashu-demo'} 
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full"
+              >
+                Start Cashu Demo
+              </button>
+              <button 
+                onClick={() => window.location.href = '/cashu-ts-demo'} 
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded w-full"
+              >
+                Start Cashu-TS Demo
+              </button>
+              <p className="text-sm text-gray-600 mt-2">
+                The Cashu-TS demo uses the actual cashu-ts library for P2PK token operations
+              </p>
+            </div>
           </div>
         </div>
         

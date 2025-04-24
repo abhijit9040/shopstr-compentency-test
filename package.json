@@ -11,6 +11,7 @@
   "dependencies": {
     "@cashu/cashu-ts": "^2.4.1",
     "@types/secp256k1": "^4.0.6",
+    "http-proxy-middleware": "^3.0.5",
     "next": "^15.2.4",
     "nostr-tools": "^2.11.0",
     "react": "18.2.0",

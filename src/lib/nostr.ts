@@ -1,4 +1,4 @@
-import { generateSecretKey, getPublicKey, nip04, SimplePool, finalizeEvent, Event as NostrEvent } from 'nostr-tools';
+import { generateSecretKey, getPublicKey, nip04, SimplePool, finalizeEvent, Event as NostrEvent, nip19 } from 'nostr-tools';
 import { hexToBytes, bytesToHex } from '@noble/hashes/utils';
 import 'websocket-polyfill';
 
@@ -23,12 +23,46 @@ export const publishGiftWrappedEvent = async (
   try {
     // Convert hex strings to Uint8Array for nostr-tools
     const privKeyBytes = hexToBytes(privateKey);
-    const pubKeyBytes = hexToBytes(recipientPubkey);
+    
+    // Handle recipient pubkey format (hex or npub)
+    let recipientHexPubkey = recipientPubkey;
+    if (recipientPubkey.startsWith('npub1')) {
+      try {
+        console.log('Decoding npub:', recipientPubkey);
+        console.log('npub length:', recipientPubkey.length);
+        
+        // Validate npub format before decoding
+        if (recipientPubkey.length < 6 || !/^npub1[0-9a-zA-Z]{58,}$/.test(recipientPubkey)) {
+          console.error('Invalid npub format:', {
+            length: recipientPubkey.length,
+            format: recipientPubkey,
+            expected: 'npub1 followed by 58+ alphanumeric characters'
+          });
+          throw new Error('Invalid npub format: incorrect length or characters');
+        }
+
+        const decoded = nip19.decode(recipientPubkey);
+        if (decoded.type === 'npub') {
+          recipientHexPubkey = decoded.data;
+        } else {
+          console.error('Invalid npub format: not a valid npub key');
+          throw new Error('Invalid npub format: not a valid npub key');
+        }
+      } catch (e) {
+        console.error('Error decoding npub:', e);
+        throw new Error('Invalid npub format: failed to decode npub key');
+      }
+    } else if (!/^[0-9a-fA-F]{64}$/.test(recipientPubkey)) {
+      console.error('Invalid hex pubkey format:', recipientPubkey);
+      throw new Error('Invalid pubkey format: must be 64-character hex string or npub1...');
+    }
+    
+    const pubKeyBytes = hexToBytes(recipientHexPubkey);
     
     // Encrypt the message content for the recipient
     const encryptedContent = await nip04.encrypt(
       bytesToHex(privKeyBytes),
-      bytesToHex(pubKeyBytes),
+      recipientHexPubkey,
       content
     );
     
@@ -36,7 +70,7 @@ export const publishGiftWrappedEvent = async (
     const unsignedEvent: Omit<NostrEvent, 'id' | 'sig'> = {
       kind: 17,
       created_at: Math.floor(Date.now() / 1000),
-      tags: [['p', recipientPubkey]],
+      tags: [['p', recipientHexPubkey]],
       content: encryptedContent,
       pubkey: getPublicKey(privKeyBytes),
     };
@@ -65,11 +99,23 @@ export function subscribeToGiftWrappedEvents(
   const sub = pool.subscribeMany(
     RELAYS,
     [{
-      kinds: [1059],
+      kinds: [1059, 17], // Support both NIP-17 and custom gift-wrapped event kinds
       '#p': [publicKey],
+      limit: 50 // Limit the number of events to prevent overwhelming
     }],
     {
-      onevent: onEvent
+      onevent: (event) => {
+        try {
+          // Validate event before passing to handler
+          if (!event.content || !event.pubkey) {
+            console.warn('Received invalid gift-wrapped event:', event);
+            return;
+          }
+          onEvent(event);
+        } catch (error) {
+          console.error('Error processing gift-wrapped event:', error);
+        }
+      }
     }
   );
   

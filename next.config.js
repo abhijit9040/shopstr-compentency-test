@@ -1,16 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   experimental: {
-    // Disable Turbopack
-    turbo: false
+    serverActions: {
+      bodySizeLimit: '2mb'
+    }
   },
   compress: true,
   poweredByHeader: false,
-  // Add hostname configuration
-  hostname: 'localhost',
-  port: 3000,
   webpack: (config, { dev, isServer }) => {
-    // Enable Fast Refresh
     if (dev) {
       config.optimization = {
         ...config.optimization,
@@ -18,7 +16,6 @@ const nextConfig = {
         splitChunks: false,
       }
     }
-    // Handle dynamic imports
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -29,4 +26,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { generateSecretKey, getPublicKey } from 'nostr-tools/pure';
-import { bytesToHex } from '@noble/hashes/utils';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
+import { nip19 } from 'nostr-tools';
 
 interface KeyManagerProps {
   privateKey: string | null;
@@ -41,8 +42,8 @@ export default function KeyManager({
   }
 
   // For demo purposes, show the encoded keys
-  const npub = `npub1${publicKey}`;
-  const nsec = `nsec1${privateKey}`;
+  const npub = nip19.npubEncode(publicKey);
+  const nsec = nip19.nsecEncode(hexToBytes(privateKey));
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg">

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { createP2PKToken, spendP2PKToken } from '@/lib/cashu';
+import { cashuTsP2PK } from '@/lib/cashu-ts-impl';
 
-export default function CashuDemo() {
+export default function CashuTsDemo() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function CashuDemo() {
     setError(null);
     
     try {
-      const { privateKey: priv, publicKey: pub } = createP2PKToken.generateKeyPair();
+      const { privateKey: priv, publicKey: pub } = cashuTsP2PK.generateKeyPair();
       setPrivateKey(priv);
       setPublicKey(pub);
     } catch (e) {
@@ -38,7 +38,7 @@ export default function CashuDemo() {
     setError(null);
     
     try {
-      const { invoice: inv, token: tok } = await createP2PKToken.createToken(
+      const { invoice: inv, token: tok } = await cashuTsP2PK.createToken(
         mintUrl,
         amount,
         publicKey
@@ -65,7 +65,7 @@ export default function CashuDemo() {
     setError(null);
     
     try {
-      const result = await spendP2PKToken.spendToken(
+      const result = await cashuTsP2PK.spendToken(
         mintUrl,
         token,
         privateKey,
@@ -84,7 +84,7 @@ export default function CashuDemo() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">P2PK-locked Cashu Token Demo</h1>
+      <h1 className="text-3xl font-bold mb-8">P2PK-locked Cashu Token Demo (using cashu-ts)</h1>
       
       <div className="mb-4">
         <a href="/" className="text-blue-500 hover:underline">
@@ -101,6 +101,10 @@ export default function CashuDemo() {
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Step 1: Generate Keys for P2PK Locking</h2>
+          <p className="mb-4 text-gray-600">
+            This demo uses the <code>cashu-ts</code> library to create and spend P2PK-locked tokens.
+            First, generate a key pair that will be used to lock and unlock the token.
+          </p>
           
           {privateKey && publicKey ? (
             <div className="bg-gray-50 p-4 rounded">
@@ -130,8 +134,12 @@ export default function CashuDemo() {
         {privateKey && publicKey && (
           <div className="mb-6">
             <h2 className="text-xl font-semibold mb-2">
-              Step 2: Create P2PK-locked Token
+              Step 2: Create P2PK-locked Token with cashu-ts
             </h2>
+            <p className="mb-4 text-gray-600">
+              Now we'll create a token that is locked to your public key.
+              This uses a test mint that provides free tokens for demonstration.
+            </p>
             
             {step < 2 ? (
               <div>
@@ -174,7 +182,7 @@ export default function CashuDemo() {
                     <code className="text-sm break-all">{invoice}</code>
                   </div>
                   <p className="text-sm mt-1">
-                    Pay this invoice to fund the token
+                    This is a test mint, so you don't need to pay this invoice.
                   </p>
                 </div>
                 
@@ -183,6 +191,9 @@ export default function CashuDemo() {
                   <div className="bg-gray-100 p-2 rounded overflow-x-auto mt-1">
                     <code className="text-sm break-all">{token}</code>
                   </div>
+                  <p className="text-sm mt-1">
+                    This token is locked to your public key and can only be spent by proving ownership of the corresponding private key.
+                  </p>
                 </div>
               </div>
             )}
@@ -194,14 +205,13 @@ export default function CashuDemo() {
             <h2 className="text-xl font-semibold mb-2">
               Step 3: Spend P2PK-locked Token
             </h2>
+            <p className="mb-4 text-gray-600">
+              Now you can spend the token by proving ownership of the private key.
+              The cashu-ts library will create a signature using your private key to prove ownership.
+            </p>
             
             {step < 3 ? (
               <div>
-                <p className="mb-4">
-                  After paying the invoice, you can now spend the token by proving ownership
-                  of the private key.
-                </p>
-                
                 <button
                   onClick={handleSpendToken}
                   disabled={loading}
@@ -218,10 +228,31 @@ export default function CashuDemo() {
                 <div className="bg-gray-100 p-2 rounded overflow-x-auto mt-1">
                   <code className="text-sm break-all">{spendResult}</code>
                 </div>
+                <p className="text-sm mt-4">
+                  In a real implementation, the mint would verify your signature and issue new tokens.
+                  This demo simulates the verification process locally.
+                </p>
               </div>
             )}
           </div>
         )}
+      </div>
+      
+      <div className="mt-8 bg-blue-50 p-6 rounded-lg border border-blue-200">
+        <h2 className="text-xl font-semibold mb-2">How P2PK Locking Works</h2>
+        <p className="mb-2">
+          P2PK (Pay to Public Key) locking is a mechanism that restricts token spending to the owner of a specific private key.
+        </p>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>A key pair (private and public key) is generated</li>
+          <li>The token is created with a condition that it can only be spent by proving ownership of the private key corresponding to the public key</li>
+          <li>To spend the token, the owner creates a cryptographic signature using their private key</li>
+          <li>The mint verifies this signature against the public key attached to the token</li>
+          <li>If valid, the mint allows the token to be spent</li>
+        </ol>
+        <p className="mt-4">
+          This mechanism is useful for escrow in Shopstr, as it allows tokens to be locked to a specific party until certain conditions are met.
+        </p>
       </div>
     </main>
   );
