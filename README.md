@@ -119,13 +119,3 @@ Here are some potential enhancements for the project:
 - [Cashu Protocol](https://github.com/cashubtc/cashu) - Cashu ecash protocol
 - [BOLT 11](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) - Lightning Network payment encoding
 
-## License
-
-[MIT](LICENSE)
-
----
-
-This project was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-=======
-
->>>>>>> cc6d8976d26d127009fd40b82dfed00e627ff61f
