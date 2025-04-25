@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shopstr Competency Test
+
+This project demonstrates key technologies used in the Shopstr platform, including Nostr messaging, P2PK-locked Cashu tokens, and HODL invoices for Lightning-based escrow.
+
+## Project Overview
+
+This application showcases three main features:
+
+1. **Nostr Gift-Wrapped Messages (NIP-17)** - Demonstrates encrypted direct messaging using the Nostr protocol
+2. **P2PK-locked Cashu Tokens** - Shows how to create and spend tokens locked to a specific public key
+3. **HODL Invoices** - Demonstrates Lightning Network-based escrow functionality
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v16 or newer)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd shopstr-competency-test
+```
+
+2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Nostr Gift-Wrapped Messages
 
-## Learn More
+This feature demonstrates how to:
+- Generate or import Nostr keys
+- Send encrypted direct messages to other Nostr users
+- View and decrypt received messages
 
-To learn more about Next.js, take a look at the following resources:
+The implementation follows [NIP-17](https://github.com/nostr-protocol/nips/blob/master/17.md) for gift-wrapped (encrypted) direct messages.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. P2PK-locked Cashu Tokens
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This section demonstrates:
+- Generating key pairs for P2PK locking
+- Creating tokens locked to a specific public key
+- Spending tokens by proving ownership of the private key
 
-## Deploy on Vercel
+Two implementations are provided:
+- A custom implementation in the Cashu Demo
+- An implementation using the `cashu-ts` library in the Cashu-TS Demo
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. HODL Invoices
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This feature shows how to:
+- Create HODL invoices for Lightning-based escrow
+- Manage the lifecycle of a HODL invoice
+- Settle or cancel the invoice based on conditions
+
+## Stretch Goals
+
+Here are some potential enhancements for the project:
+
+1. **Nostr Improvements**:
+   - Add support for NIP-05 verification
+   - Implement message threading
+   - Add relay management UI
+   - Support for NIP-57 zaps
+
+2. **Cashu Enhancements**:
+   - Implement multi-signature P2PK tokens
+   - Add token history tracking
+   - Create a visual token representation
+   - Implement token splitting and merging
+
+3. **HODL Invoice Extensions**:
+   - Add timelock functionality
+   - Implement multi-party escrow
+   - Create a visual escrow status dashboard
+   - Add webhook notifications for state changes
+
+4. **General Improvements**:
+   - Add comprehensive test suite
+   - Implement persistent storage
+   - Create a mobile-responsive design
+   - Add user authentication
+
+## Resources Used
+
+### Libraries and Frameworks
+
+- [Next.js](https://nextjs.org/) - React framework for the application
+- [React](https://reactjs.org/) - UI library
+- [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [nostr-tools](https://github.com/nbd-wtf/nostr-tools) - Tools for working with the Nostr protocol
+- [@cashu/cashu-ts](https://github.com/cashubtc/cashu-ts) - TypeScript implementation of the Cashu protocol
+- [secp256k1](https://github.com/cryptocoinjs/secp256k1-node) - Elliptic curve cryptography library
+
+### Specifications
+
+- [Nostr NIPs](https://github.com/nostr-protocol/nips) - Nostr Implementation Possibilities
+- [Cashu Protocol](https://github.com/cashubtc/cashu) - Cashu ecash protocol
+- [BOLT 11](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) - Lightning Network payment encoding
+
+## License
+
+[MIT](LICENSE)
+
+---
+
+This project was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
