@@ -57,6 +57,7 @@ The implementation follows [NIP-17](https://github.com/nostr-protocol/nips/blob/
 
 ### 2. P2PK-locked Cashu Tokens
 
+<<<<<<< HEAD
 This section demonstrates:
 - Generating key pairs for P2PK locking
 - Creating tokens locked to a specific public key
@@ -125,3 +126,6 @@ Here are some potential enhancements for the project:
 ---
 
 This project was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+=======
+
+>>>>>>> cc6d8976d26d127009fd40b82dfed00e627ff61f
